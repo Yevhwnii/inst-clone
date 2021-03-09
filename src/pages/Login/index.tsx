@@ -6,23 +6,27 @@ import { Link } from 'react-router-dom';
 
 import FirebaseContext from '../../context/firebase';
 import * as ROUTES from '../../constants/routes';
+import Spinner from '../../components/Spinner';
 
 const Login: React.FC = () => {
   const history = useHistory();
   const { firebase } = useContext(FirebaseContext);
-  const auth = firebase?.auth();
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const isInvalid = password === '' || email === '';
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true);
     event.preventDefault();
     try {
-      await auth?.signInWithEmailAndPassword(email, password);
+      const auth = firebase?.auth();
+      await auth!.signInWithEmailAndPassword(email, password);
       const subscription = authState(auth!).subscribe((res) => {
         console.log('User: ', res);
+        setLoading(false);
         subscription.unsubscribe();
       });
 
@@ -31,6 +35,7 @@ const Login: React.FC = () => {
       setEmail('');
       setPassword('');
       setError(error.message);
+      setLoading(false);
     }
   };
 
@@ -48,7 +53,7 @@ const Login: React.FC = () => {
       </div>
       <div className='flex flex-col w-2/5'>
         <motion.div
-          initial={{ x: -100, opacity: 0 }}
+          initial={{ x: -50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: 100, opacity: 0 }}>
           <div className='flex flex-col items-center bg-white p-4 border border-gray-primary mb-4 rounded'>
@@ -60,31 +65,40 @@ const Login: React.FC = () => {
               />
             </h1>
             {error && <p className='mb-4 text-xs text-red-primary'>{error}</p>}
-            <form onSubmit={handleLogin} method='POST'>
-              <input
-                aria-label='Enter your email address'
-                type='text'
-                placeholder='Email address'
-                value={email}
-                className='text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2'
-                onChange={({ target }) => setEmail(target.value)}
-              />
-              <input
-                aria-label='Enter your password'
-                type='password'
-                value={password}
-                placeholder='Password'
-                className='text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2'
-                onChange={({ target }) => setPassword(target.value)}
-              />
-              <button
-                disabled={isInvalid}
-                type='submit'
-                className={`bg-blue-medium text-white w-full rounded h-8 font-bold ${
-                  isInvalid && 'opacity-50'
-                }`}>
-                Log In
-              </button>
+            <form
+              style={{ height: 150, width: 280 }}
+              onSubmit={handleLogin}
+              method='POST'>
+              {loading ? (
+                <Spinner />
+              ) : (
+                <>
+                  <input
+                    aria-label='Enter your email address'
+                    type='text'
+                    placeholder='Email address'
+                    value={email}
+                    className='text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2'
+                    onChange={({ target }) => setEmail(target.value)}
+                  />
+                  <input
+                    aria-label='Enter your password'
+                    type='password'
+                    value={password}
+                    placeholder='Password'
+                    className='text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2'
+                    onChange={({ target }) => setPassword(target.value)}
+                  />
+                  <button
+                    disabled={isInvalid}
+                    type='submit'
+                    className={`bg-blue-medium text-white w-full rounded h-8 font-bold ${
+                      isInvalid && 'opacity-50'
+                    }`}>
+                    Log In
+                  </button>
+                </>
+              )}
             </form>
           </div>
         </motion.div>
