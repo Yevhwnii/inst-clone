@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import FirebaseContext from '../../context/firebase';
 import * as ROUTES from '../../constants/routes';
 import { doesUserExists } from '../../services/firebase';
-import { Subscription } from 'rxjs';
+import Spinner from '../../components/Spinner';
 
 const Login: React.FC = () => {
   const history = useHistory();
@@ -18,18 +18,54 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const isInvalid = password === '' || email === '';
 
   const handleSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    let subscription: Subscription;
+    setLoading(true);
+    const subscription = doesUserExists(username).subscribe(
+      async (doesUser) => {
+        try {
+          setError('');
+          if (!doesUser) {
+            const auth = firebase?.auth();
+            const firestore = firebase?.firestore();
+            // auth flow
+            const creationResult = await auth?.createUserWithEmailAndPassword(
+              email,
+              password
+            );
+            console.log(creationResult);
+            await creationResult?.user?.updateProfile({
+              displayName: username,
+            });
+            // firestore flow
+            await firestore?.collection('users').add({
+              userId: creationResult?.user?.uid,
+              username: username.toLowerCase(),
+              fullName,
+              email: email.toLowerCase(),
+              following: [],
+              dateCreated: Date.now(),
+            });
 
-    try {
-      subscription = doesUserExists(username).subscribe((doesUser) => {
-        console.log(doesUser);
-        subscription.unsubscribe();
-      });
-    } catch (error) {}
+            history.push(ROUTES.DASHBOARD);
+          } else {
+            throw new Error('That username already exists');
+          }
+          setLoading(false);
+          subscription.unsubscribe();
+        } catch (error) {
+          setFullName('');
+          setEmail('');
+          setUsername('');
+          setPassword('');
+          setLoading(false);
+          setError(error.message);
+        }
+      }
+    );
   };
 
   useEffect(() => {
@@ -46,7 +82,7 @@ const Login: React.FC = () => {
       </div>
       <div className='flex flex-col w-2/5'>
         <motion.div
-          initial={{ x: -100, opacity: 0 }}
+          initial={{ x: -50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: 100, opacity: 0 }}>
           <div className='flex flex-col items-center bg-white p-4 border border-gray-primary mb-4 rounded'>
@@ -58,48 +94,56 @@ const Login: React.FC = () => {
               />
             </h1>
             {error && <p className='mb-4 text-xs text-red-primary'>{error}</p>}
-
-            <form onSubmit={handleSignUp} method='POST'>
-              <input
-                aria-label='Enter your username'
-                type='text'
-                placeholder='Username'
-                value={username}
-                className='text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2'
-                onChange={({ target }) => setUsername(target.value)}
-              />
-              <input
-                aria-label='Enter your full name'
-                type='text'
-                placeholder='Full name'
-                value={fullName}
-                className='text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2'
-                onChange={({ target }) => setFullName(target.value)}
-              />
-              <input
-                aria-label='Enter your email address'
-                type='text'
-                placeholder='Email address'
-                value={email}
-                className='text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2'
-                onChange={({ target }) => setEmail(target.value)}
-              />
-              <input
-                aria-label='Enter your password'
-                type='password'
-                value={password}
-                placeholder='Password'
-                className='text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2'
-                onChange={({ target }) => setPassword(target.value)}
-              />
-              <button
-                disabled={isInvalid}
-                type='submit'
-                className={`bg-blue-medium text-white w-full rounded h-8 font-bold ${
-                  isInvalid && 'opacity-50'
-                }`}>
-                Sign up
-              </button>
+            <form
+              onSubmit={handleSignUp}
+              style={{ height: 250, width: 280 }}
+              method='POST'>
+              {loading ? (
+                <Spinner />
+              ) : (
+                <>
+                  <input
+                    aria-label='Enter your username'
+                    type='text'
+                    placeholder='Username'
+                    value={username}
+                    className='text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2'
+                    onChange={({ target }) => setUsername(target.value)}
+                  />
+                  <input
+                    aria-label='Enter your full name'
+                    type='text'
+                    placeholder='Full name'
+                    value={fullName}
+                    className='text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2'
+                    onChange={({ target }) => setFullName(target.value)}
+                  />
+                  <input
+                    aria-label='Enter your email address'
+                    type='text'
+                    placeholder='Email address'
+                    value={email}
+                    className='text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2'
+                    onChange={({ target }) => setEmail(target.value)}
+                  />
+                  <input
+                    aria-label='Enter your password'
+                    type='password'
+                    value={password}
+                    placeholder='Password'
+                    className='text-sm text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2'
+                    onChange={({ target }) => setPassword(target.value)}
+                  />
+                  <button
+                    disabled={isInvalid}
+                    type='submit'
+                    className={`bg-blue-medium text-white w-full rounded h-8 font-bold ${
+                      isInvalid && 'opacity-50'
+                    }`}>
+                    Sign up
+                  </button>
+                </>
+              )}
             </form>
           </div>
         </motion.div>
