@@ -3,8 +3,6 @@ import { collection } from 'rxfire/firestore';
 import { map } from 'rxjs/operators';
 
 export const doesUserExists = (username: string) => {
-  console.log('Here');
-
   const db = firebase.firestore();
   const userCollectionRef = db
     .collection('users')
