@@ -1,9 +1,16 @@
 import React from 'react';
+import CSS from 'csstype';
 import SpinnerSvg from './spinner.svg';
 
-const Spinner = () => {
+interface SpinnerProps {
+  spinnerStyles?: CSS.Properties;
+}
+
+const Spinner: React.FC<SpinnerProps> = ({ spinnerStyles }) => {
   return (
-    <div className='w-full h-full flex items-center justify-center'>
+    <div
+      style={spinnerStyles}
+      className='w-full h-full flex items-center justify-center'>
       <img className='w-12 h-12' src={SpinnerSvg} alt='Spinner' />
     </div>
   );
