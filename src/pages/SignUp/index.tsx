@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { authState } from 'rxfire/auth';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
 
@@ -12,22 +11,24 @@ import Spinner from '../../components/Spinner';
 const Login: React.FC = () => {
   const history = useHistory();
   const { firebase } = useContext(FirebaseContext);
-
+  // States
   const [username, setUsername] = useState<string>('');
   const [fullName, setFullName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const isInvalid = password === '' || email === '';
+  // Disable button if no input
+  const isInvalid =
+    password === '' || email === '' || username === '' || fullName === '';
 
   const handleSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
+    setError('');
     const subscription = doesUserExists(username).subscribe(
       async (doesUser) => {
         try {
-          setError('');
           if (!doesUser) {
             const auth = firebase?.auth();
             const firestore = firebase?.firestore();
@@ -36,7 +37,8 @@ const Login: React.FC = () => {
               email,
               password
             );
-            console.log(creationResult);
+            // unsubscribe earlier so that when new user will be added, new value from collection() observable won`t emit
+            subscription.unsubscribe();
             await creationResult?.user?.updateProfile({
               displayName: username,
             });
@@ -49,20 +51,18 @@ const Login: React.FC = () => {
               following: [],
               dateCreated: Date.now(),
             });
-
+            setLoading(false);
             history.push(ROUTES.DASHBOARD);
           } else {
+            subscription.unsubscribe();
             throw new Error('That username already exists');
           }
-          setLoading(false);
-          subscription.unsubscribe();
         } catch (error) {
-          setFullName('');
           setEmail('');
-          setUsername('');
           setPassword('');
           setLoading(false);
           setError(error.message);
+          subscription.unsubscribe();
         }
       }
     );
@@ -96,7 +96,7 @@ const Login: React.FC = () => {
             {error && <p className='mb-4 text-xs text-red-primary'>{error}</p>}
             <form
               onSubmit={handleSignUp}
-              style={{ height: 250, width: 280 }}
+              style={{ height: 250, maxWidth: 280 }}
               method='POST'>
               {loading ? (
                 <Spinner />
@@ -137,7 +137,7 @@ const Login: React.FC = () => {
                   <button
                     disabled={isInvalid}
                     type='submit'
-                    className={`bg-blue-medium text-white w-full rounded h-8 font-bold ${
+                    className={`bg-blue-medium text-white w-full rounded h-8 font-bold outline-none focus:outline-none ${
                       isInvalid && 'opacity-50'
                     }`}>
                     Sign up
