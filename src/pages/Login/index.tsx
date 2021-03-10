@@ -25,7 +25,6 @@ const Login: React.FC = () => {
       const auth = firebase?.auth();
       await auth!.signInWithEmailAndPassword(email, password);
       const subscription = authState(auth!).subscribe((res) => {
-        console.log('User: ', res);
         setLoading(false);
         subscription.unsubscribe();
       });
@@ -66,7 +65,7 @@ const Login: React.FC = () => {
             </h1>
             {error && <p className='mb-4 text-xs text-red-primary'>{error}</p>}
             <form
-              style={{ height: 150, width: 280 }}
+              style={{ height: 135, maxWidth: 280 }}
               onSubmit={handleLogin}
               method='POST'>
               {loading ? (
@@ -92,7 +91,7 @@ const Login: React.FC = () => {
                   <button
                     disabled={isInvalid}
                     type='submit'
-                    className={`bg-blue-medium text-white w-full rounded h-8 font-bold ${
+                    className={`bg-blue-medium text-white w-full rounded h-8 font-bold outline-none focus:outline-none ${
                       isInvalid && 'opacity-50'
                     }`}>
                     Log In
