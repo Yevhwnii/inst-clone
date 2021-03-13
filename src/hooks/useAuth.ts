@@ -24,7 +24,6 @@ const useAuth = () => {
         setUserDoc(null);
         localStorage.removeItem('authUser');
       }
-      console.log(u);
     });
 
     return () => subscription.unsubscribe();
