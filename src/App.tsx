@@ -4,7 +4,7 @@ import { Switch, Route, useLocation } from 'react-router-dom';
 
 import Spinner from './components/Spinner';
 import * as ROUTES from './constants/routes';
-import UserContext from './context/user';
+import AuthContext from './context/auth';
 import useAuth from './hooks/useAuth';
 const Login = lazy(() => import('./pages/Login'));
 const SignUp = lazy(() => import('./pages/SignUp'));
@@ -13,12 +13,12 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 
 const App: React.FC = () => {
   const location = useLocation();
-  const [authUser, userDoc] = useAuth();
+  const [authUser] = useAuth();
+
   return (
-    <UserContext.Provider
+    <AuthContext.Provider
       value={{
         authUser,
-        userDoc,
       }}>
       <Suspense
         fallback={
@@ -41,7 +41,7 @@ const App: React.FC = () => {
           </Switch>
         </AnimatePresence>
       </Suspense>
-    </UserContext.Provider>
+    </AuthContext.Provider>
   );
 };
 
