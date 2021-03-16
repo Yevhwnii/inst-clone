@@ -1,14 +1,23 @@
-import Firebase from 'firebase/app';
 import { createContext } from 'react';
 
+import { IUser } from '../services/types';
+
 interface IUserContext {
-  authUser: Firebase.User | null;
-  userDoc: any;
+  user: IUser;
 }
 
+export const defaultUserObject: IUser = {
+  dateCreated: new Date(),
+  docId: '',
+  emailAddress: '',
+  followers: [''],
+  following: [''],
+  fullName: '',
+  userId: '',
+  username: '',
+};
 const UserContext = createContext<IUserContext>({
-  authUser: null,
-  userDoc: null,
+  user: { ...defaultUserObject },
 });
 
 export default UserContext;
