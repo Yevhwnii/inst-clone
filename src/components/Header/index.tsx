@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 
-import UserContext from '../../context/user';
+import AuthContext from '../../context/auth';
 import * as ROUTES from '../../constants/routes';
 import FirebaseContext from '../../context/firebase';
 import HomeIcon from './homeIcon';
@@ -9,7 +9,7 @@ import LogoutIcon from './logoutIcon';
 
 const Header: React.FC = () => {
   const { firebase } = useContext(FirebaseContext);
-  const { authUser } = useContext(UserContext);
+  const { authUser } = useContext(AuthContext);
 
   return (
     <header className='h-16 bg-white border-b border-gray-primary mb-8'>
