@@ -5,17 +5,19 @@ import Suggestions from './Suggestions';
 import User from './User';
 
 const Sidebar = () => {
-  const { userDoc } = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
-  console.log(userDoc);
+  if (!user.docId) {
+    return null;
+  }
 
   return (
     <div className='p-4'>
-      <User username={userDoc?.username} fullName={userDoc?.fullName} />
+      <User username={user.username} fullName={user.fullName} />
       <Suggestions
-        userId={userDoc?.userId}
-        following={userDoc?.following}
-        loggedInUserDocId={userDoc?.docId}
+        userId={user.userId}
+        following={user.following}
+        loggedInUserDocId={user.docId}
       />
     </div>
   );
