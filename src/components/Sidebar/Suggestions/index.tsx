@@ -6,7 +6,7 @@ import SuggestedProfile from './SuggestedProfile';
 
 interface SuggestionProps {
   userId: string;
-  following: [];
+  following: [string];
   loggedInUserDocId: string;
 }
 
