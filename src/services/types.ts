@@ -1,7 +1,7 @@
 export interface IPhoto {
   caption: string;
   comments: [IComment];
-  dateCreated: Date;
+  dateCreated: number;
   imageSrc: string;
   likes: [];
   photoId: number;
@@ -12,7 +12,7 @@ export interface IPhoto {
 }
 
 export interface IUser {
-  dateCreated: Date;
+  dateCreated: number;
   emailAddress: string;
   followers: [string];
   following: [string];
@@ -22,4 +22,7 @@ export interface IUser {
   docId: string;
 }
 
-export interface IComment {}
+export interface IComment {
+  comment: string;
+  displayName: string;
+}

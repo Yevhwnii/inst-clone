@@ -7,7 +7,7 @@ interface IUserContext {
 }
 
 export const defaultUserObject: IUser = {
-  dateCreated: new Date(),
+  dateCreated: 0,
   docId: '',
   emailAddress: '',
   followers: [''],
