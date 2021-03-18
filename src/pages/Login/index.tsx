@@ -24,7 +24,7 @@ const Login: React.FC = () => {
     try {
       const auth = firebase?.auth();
       await auth!.signInWithEmailAndPassword(email, password);
-      const subscription = authState(auth!).subscribe((res) => {
+      const subscription = authState(auth!).subscribe((_) => {
         setLoading(false);
         subscription.unsubscribe();
       });
