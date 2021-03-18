@@ -3,6 +3,7 @@ import { collection } from 'rxfire/firestore';
 import { map } from 'rxjs/operators';
 import { IPhoto, IUser } from './types';
 
+// Check if user exists in firebase firestore and return boolean value
 export const doesUserExists = (username: string) => {
   const db = firebase.firestore();
   const userCollectionRef = db
@@ -12,6 +13,21 @@ export const doesUserExists = (username: string) => {
   return collection(userCollectionRef).pipe(
     map((user) => (user.length > 0 ? true : false))
   );
+};
+// Check if user exists in firebase firestore and return user document
+export const getUserByUsername = async (username: string) => {
+  const result = await firebase
+    .firestore()
+    .collection('users')
+    .where('username', '==', username)
+    .get();
+
+  const user = result.docs.map((item) => ({
+    ...(item.data() as IUser),
+    docId: item.id,
+  }));
+
+  return user;
 };
 
 export const getUserById = async (userId: string) => {
@@ -121,4 +137,14 @@ export const getPhotos = async (userId: string, following: [string]) => {
   );
 
   return photosWithUserDetails;
+};
+
+export const getUserPhotosByUserId = async (userId: string) => {
+  const result = await firebase
+    .firestore()
+    .collection('photos')
+    .where('userId', '==', userId)
+    .get();
+
+  return result.docs.map((photo) => ({ ...photo.data(), docId: photo.id }));
 };
