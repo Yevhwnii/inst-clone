@@ -5,10 +5,14 @@ import { Switch, Route, useLocation } from 'react-router-dom';
 import Spinner from './components/Spinner';
 import * as ROUTES from './constants/routes';
 import AuthContext from './context/auth';
+import IsUserLoggedIn from './helpers/isUserLoggedIn';
+import ProtectedRoute from './helpers/protected.route';
 import useAuth from './hooks/useAuth';
+
 const Login = lazy(() => import('./pages/Login'));
 const SignUp = lazy(() => import('./pages/SignUp'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Profile = lazy(() => import('./pages/Profile'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 const App: React.FC = () => {
@@ -26,15 +30,29 @@ const App: React.FC = () => {
         }>
         <AnimatePresence exitBeforeEnter>
           <Switch location={location} key={location.pathname}>
-            <Route exact path={ROUTES.LOGIN}>
+            <IsUserLoggedIn
+              user={authUser}
+              loggedInPath={ROUTES.DASHBOARD}
+              exact
+              path={ROUTES.LOGIN}>
               <Login />
-            </Route>
-            <Route exact path={ROUTES.SIGN_UP}>
+            </IsUserLoggedIn>
+            <IsUserLoggedIn
+              user={authUser}
+              loggedInPath={ROUTES.DASHBOARD}
+              exact
+              path={ROUTES.SIGN_UP}>
               <SignUp />
+            </IsUserLoggedIn>
+            <Route path={ROUTES.PROFILE}>
+              <Profile />
             </Route>
-            <Route exact path={ROUTES.DASHBOARD}>
+            <ProtectedRoute
+              user={authUser}
+              exact={true}
+              path={ROUTES.DASHBOARD}>
               <Dashboard />
-            </Route>
+            </ProtectedRoute>
             <Route>
               <NotFound />
             </Route>
