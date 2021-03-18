@@ -33,16 +33,15 @@ const SuggestedProfile: React.FC<SuggestedProfileProps> = ({
   };
   return !followed ? (
     <div className='flex flex-row items-center align-items justify-between '>
-      <div className='flex items-center justify-between'>
+      <Link className='flex items-center justify-between' to={`/p/${username}`}>
         <img
           src={`/images/avatars/${username}.jpg`}
           alt={`${username} avatar`}
           className='rounded-full w-8 flex mr-3'
         />
-        <Link to={`/p/${username}`}>
-          <p className='font-bold text-sm'>{username}</p>
-        </Link>
-      </div>
+        <p className='font-bold text-sm'>{username}</p>
+      </Link>
+
       <button
         type='button'
         className='text-xs font-bold text-blue-medium'
