@@ -17,7 +17,7 @@ In the project directory, run:
 
 Install dependencies of project
 
-### `yarn install`
+### `yarn start`
 
 Runs app locally on your machine.
 
