@@ -2,6 +2,7 @@ const LogoutIcon = () => {
   return (
     <svg
       className='w-8 mr-6 text-black-light cursor-pointer'
+      style={{ marginRight: 16 }}
       xmlns='http://www.w3.org/2000/svg'
       fill='none'
       viewBox='0 0 24 24'

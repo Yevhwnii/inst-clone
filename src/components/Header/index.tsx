@@ -28,7 +28,7 @@ const Header: React.FC = () => {
             </h1>
           </div>
           {/* Right side */}
-          <div className='text-gray-700 text-center flex items-center align-items '>
+          <div className='text-gray-700 text-center flex items-center align-items'>
             {authUser ? (
               <>
                 <Link

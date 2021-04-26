@@ -32,7 +32,6 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
   useEffect(() => {
     const getProfileInfoAndPhotos = async () => {
       const photos = await getUserPhotosByUserId(user!.userId);
-      console.log(photos);
 
       dispatch({
         profile: user,
