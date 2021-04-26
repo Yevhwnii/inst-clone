@@ -103,6 +103,51 @@ export const updateFollowedUserFollowers = async (
     });
 };
 
+export const isUserFollowingProfile = async (
+  userId: string,
+  profileUserId: string
+) => {
+  const result = await firebase
+    .firestore()
+    .collection('users')
+    .where('userId', '==', userId)
+    .where('following', 'array-contains', profileUserId)
+    .get();
+
+  const userDoc = result.docs.map((doc) => ({
+    ...(doc.data() as IUser),
+    docId: doc.id,
+  }));
+
+  return userDoc.length > 0;
+};
+
+export async function toggleFollow(
+  isFollowingProfile: boolean,
+  activeUserDocId: string,
+  profileDocId: string,
+  profileUserId: string,
+  followingUserId: string
+) {
+  // 1st param: karl's doc id
+  // 2nd param: raphael's user id
+  // 3rd param: is the user following this profile? e.g. does karl follow raphael? (true/false)
+  await updateLoggedInUserFollowing(
+    activeUserDocId,
+    profileUserId,
+    isFollowingProfile
+  );
+
+  // 1st param: karl's user id
+  // 2nd param: raphael's doc id
+  // 3rd param: is the user following this profile? e.g. does karl follow raphael? (true/false)
+  await updateFollowedUserFollowers(
+    profileDocId,
+    followingUserId,
+    isFollowingProfile
+  );
+}
+
 // --------------------------------------------------
 // PHOTOS SECTION
 
@@ -146,5 +191,8 @@ export const getUserPhotosByUserId = async (userId: string) => {
     .where('userId', '==', userId)
     .get();
 
-  return result.docs.map((photo) => ({ ...photo.data(), docId: photo.id }));
+  return result.docs.map((photo) => ({
+    ...(photo.data() as IPhoto),
+    docId: photo.id,
+  }));
 };

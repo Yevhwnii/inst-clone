@@ -5,6 +5,10 @@ import FirebaseContext from './context/firebase';
 import { firebase, FieldValue } from './lib/firebase';
 import './styles/app.css';
 
+// Ideas:
+// Create post
+// View all comments
+
 ReactDOM.render(
   <Router>
     <FirebaseContext.Provider value={{ firebase, FieldValue }}>

@@ -1,4 +1,8 @@
-const CommentsIcon = ({ onClick, className, onKeyDown }) => {
+const CommentsIcon = ({
+  onClick = () => {},
+  className = '',
+  onKeyDown = (e) => {},
+}) => {
   return (
     <svg
       onClick={onClick}

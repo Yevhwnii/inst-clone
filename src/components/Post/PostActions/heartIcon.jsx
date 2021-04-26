@@ -1,4 +1,8 @@
-const HeartIcon = ({ onClick, className, onKeyDown }) => {
+const HeartIcon = ({
+  onClick = () => {},
+  className = '',
+  onKeyDown = (e) => {},
+}) => {
   return (
     <svg
       onClick={onClick}
