@@ -1,4 +1,8 @@
 module.exports = {
+  purge: {
+    enabled: true,
+    content: ['./src/**/*.tsx', './src/**/**/*.tsx', './src/**/**/**/*.tsx'],
+  },
   future: {
     removeDeprecatedGapUtilities: true,
   },
